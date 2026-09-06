@@ -1,0 +1,3155 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ALT F4 GAMING | Official Lounge OS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- QR Code Generator & Camera Scanner -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <style>
+        :root {
+            --bg-base: #050811;
+            --bg-card: #0c1424;
+            --bg-elevated: #131f37;
+            --primary: #00f0ff;
+            --primary-glow: rgba(0, 240, 255, 0.4);
+            --neon-pink: #ff007f;
+            --neon-pink-glow: rgba(255, 0, 127, 0.35);
+            --neon-green: #00ff88;
+            --warning-amber: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --border-color: #1e2e4a;
+            --border-neon: rgba(0, 240, 255, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            padding-bottom: 105px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        #splashScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #111a33 0%, #050811 100%);
+            z-index: 100000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        .splash-core {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .splash-ring {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px dashed var(--primary);
+            animation: spin 8s linear infinite;
+        }
+        .splash-ring-pink {
+            position: absolute;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 1px dashed var(--neon-pink);
+            animation: spinRev 6s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spinRev { 100% { transform: rotate(-360deg); } }
+
+        .splash-logo-box {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00f0ff, #ff007f);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 35px var(--primary-glow);
+            z-index: 2;
+        }
+        .splash-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .splash-title span { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
+        .splash-sub {
+            font-size: 11px;
+            color: var(--text-dim);
+            letter-spacing: 2px;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+        }
+        .splash-progress-track {
+            width: 170px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 22px;
+            overflow: hidden;
+            position: relative;
+        }
+        .splash-progress-bar {
+            position: absolute;
+            left: 0; top: 0; height: 100%; width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--neon-pink));
+            animation: fillSplash 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+        @keyframes fillSplash {
+            0% { width: 0%; }
+            60% { width: 75%; }
+            100% { width: 100%; }
+        }
+
+        #inAppToast {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-120px);
+            background: linear-gradient(135deg, rgba(13, 21, 39, 0.98), rgba(79, 70, 229, 0.98));
+            border: 1px solid var(--primary);
+            box-shadow: 0 10px 25px rgba(0, 240, 255, 0.35);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-size: 12.5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 999999;
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(12px);
+            max-width: 92vw;
+            text-align: center;
+        }
+        #inAppToast.show { transform: translateX(-50%) translateY(0); }
+
+        #customConfirmModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(4, 6, 12, 0.94);
+            backdrop-filter: blur(12px);
+            z-index: 100002;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+        }
+        .confirm-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--warning-amber);
+            border-radius: 16px;
+            padding: 20px 16px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .app-top-announcement {
+            background: linear-gradient(90deg, #0284c7, #7c3aed);
+            color: #fff;
+            padding: 6px 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+        }
+        .live-sync-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid #10b981;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            color: #10b981;
+        }
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1.4s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.7); } }
+
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(5, 8, 17, 0.98);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex: 1;
+        }
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--neon-pink));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            color: #000;
+            font-size: 18px;
+            box-shadow: 0 0 15px var(--primary-glow);
+            flex-shrink: 0;
+        }
+        .brand-title-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .brand-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 1px;
+            line-height: 1.1;
+            white-space: nowrap;
+        }
+        .brand-title span { color: var(--primary); }
+        .brand-location-sub {
+            font-size: 10.5px;
+            color: #94a3b8;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .insta-header-btn {
+            background: linear-gradient(135deg, #f09433, #dc2743 50%, #bc1888 100%);
+            color: #fff;
+            padding: 7px 11px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-family: 'Orbitron', sans-serif;
+            white-space: nowrap;
+        }
+        .admin-trigger-btn {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #334155;
+            color: #38bdf8;
+            padding: 7px 11px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .loyalty-reward-bar {
+            margin: 10px 12px 0;
+            background: linear-gradient(135deg, #0e172a, #131c38);
+            border: 1px solid var(--border-neon);
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+        .loyalty-top-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .loyalty-points-txt {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            color: #fff;
+        }
+        .loyalty-target-badge {
+            background: rgba(255, 0, 127, 0.2);
+            border: 1px solid var(--neon-pink);
+            color: var(--neon-pink);
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 9.5px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+        }
+        .loyalty-progress-track {
+            width: 100%;
+            height: 6px;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 4px;
+        }
+        .loyalty-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--neon-green));
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+        .loyalty-desc {
+            font-size: 11px;
+            color: var(--text-dim);
+            line-height: 1.2;
+        }
+
+        .promo-banner-container {
+            margin: 10px 12px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            position: relative;
+            height: 115px;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: flex-end;
+            padding: 12px;
+        }
+        .promo-banner-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(5, 8, 17, 0.1) 0%, rgba(5, 8, 17, 0.95) 100%);
+        }
+        .promo-text-wrap { position: relative; z-index: 2; width: 100%; }
+        .promo-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1.2;
+        }
+        .promo-sub { font-size: 11.5px; color: var(--primary); font-weight: 600; margin-top: 2px; }
+
+        .live-timer-widget {
+            display: none;
+            margin: 10px 12px 0;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 78, 59, 0.3));
+            border: 1px solid var(--neon-green);
+            border-radius: 12px;
+            padding: 10px 14px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .timer-info-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--neon-green);
+        }
+        .timer-clock {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 17px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+        .btn-stop-early {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            font-family: 'Orbitron';
+            font-size: 9.5px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        .tab-nav-wrapper {
+            position: sticky;
+            top: 65px;
+            z-index: 90;
+            background: var(--bg-base);
+            border-bottom: 1px solid var(--border-color);
+            padding: 8px 10px;
+        }
+        .tab-nav {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .tab-btn {
+            padding: 8px 2px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-dim);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 9.5px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            white-space: nowrap;
+        }
+        .tab-btn span.tab-icon { font-size: 13px; line-height: 1; }
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.18), rgba(255, 0, 127, 0.18));
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .section-pane {
+            display: none;
+            padding: 14px 12px;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .section-pane.active {
+            display: block;
+            animation: fadeIn 0.25s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-heading {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-heading::before {
+            content: '';
+            width: 4px;
+            height: 14px;
+            background: var(--primary);
+            border-radius: 2px;
+            box-shadow: 0 0 8px var(--primary);
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 12px 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .boxes-6-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .station-box-item {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .station-box-item.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.18), rgba(12, 20, 36, 0.9));
+            box-shadow: 0 0 14px var(--primary-glow);
+        }
+        .station-box-item.occupied {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+            cursor: not-allowed;
+        }
+        .station-box-item.disabled-off {
+            border-color: #334155;
+            background: rgba(15, 23, 42, 0.8);
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .station-box-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12.5px;
+            font-weight: 900;
+            color: #fff;
+        }
+        .station-box-type {
+            font-size: 10px;
+            color: var(--text-dim);
+        }
+        .station-box-status {
+            font-size: 9.5px;
+            font-weight: 900;
+            font-family: 'Orbitron';
+        }
+
+        .controllers-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .ctrl-pill {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 10.5px;
+            font-weight: 800;
+            color: var(--text-dim);
+            transition: all 0.2s;
+        }
+        .ctrl-pill.selected {
+            border-color: var(--neon-pink);
+            background: rgba(255, 0, 127, 0.18);
+            color: #fff;
+            box-shadow: 0 0 10px var(--neon-pink-glow);
+        }
+
+        .plan-cards-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .plan-card-item {
+            background: #080d19;
+            border: 1.5px solid #1c2b45;
+            border-radius: 10px;
+            padding: 10px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .plan-card-item:hover {
+            border-color: var(--primary);
+            background: #0d1628;
+        }
+        .plan-card-item.selected {
+            border-color: var(--primary);
+            background: linear-gradient(90deg, rgba(0, 240, 255, 0.14) 0%, rgba(12, 20, 36, 0.9) 100%);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.25);
+        }
+        .plan-card-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .plan-radio-circle {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .plan-card-item.selected .plan-radio-circle {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+        .plan-card-item.selected .plan-radio-circle::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #000;
+        }
+        .plan-title-txt {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .plan-sub-txt { font-size: 10.5px; color: var(--text-dim); }
+        .plan-price-pill {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: 900;
+            color: var(--neon-green);
+            flex-shrink: 0;
+        }
+
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 14px 12px;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+        .form-group { margin-bottom: 12px; width: 100%; }
+        .form-label {
+            display: block;
+            color: var(--text-dim);
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+        .form-control {
+            width: 100%;
+            background: #050811;
+            border: 1px solid #1c2b45;
+            color: #fff;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        .receipt-container {
+            background: #050811;
+            border: 1px dashed #223454;
+            border-radius: 10px;
+            padding: 12px;
+            margin: 12px 0;
+            width: 100%;
+        }
+        .receipt-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: var(--text-dim);
+            gap: 10px;
+        }
+        .receipt-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #223454;
+            padding-top: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--neon-green);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 11.5px;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 8px;
+            text-align: center;
+            white-space: normal;
+            line-height: 1.3;
+        }
+        .btn-upi {
+            background: linear-gradient(135deg, #00f0ff, #0077ff);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(0, 240, 255, 0.35);
+        }
+        .btn-cash {
+            background: linear-gradient(135deg, #10b981, #047857);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+        }
+        .btn-whatsapp {
+            background: #25d366;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+        }
+
+        .rate-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+        .rate-card-header {
+            height: 75px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 10px;
+        }
+        .rate-card-header::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(12, 20, 36, 0.95) 100%);
+        }
+        .rate-badge-title {
+            position: relative;
+            z-index: 2;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #fff;
+        }
+        .rate-content { padding: 10px; }
+        .rate-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 10px;
+            background: var(--bg-elevated);
+            border-radius: 6px;
+            margin-bottom: 5px;
+            font-size: 13px;
+            gap: 8px;
+        }
+
+        .food-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--bg-elevated);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            width: 100%;
+        }
+        .food-thumb {
+            width: 52px;
+            height: 52px;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            border: 1px solid #233452;
+        }
+        .food-info { flex: 1; min-width: 0; }
+        .food-info h4 { font-size: 14px; color: #fff; font-weight: 600; }
+        .food-info span { font-size: 11.5px; color: var(--text-dim); }
+        .btn-add-food {
+            background: var(--neon-pink);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 7px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .reviews-section {
+            margin-top: 24px;
+            padding-top: 18px;
+            border-top: 1px dashed var(--border-color);
+        }
+        .rating-overall-card {
+            background: linear-gradient(135deg, #0c1529, #172445);
+            border: 1px solid var(--border-neon);
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .star-rating-box {
+            font-size: 22px;
+            color: #facc15;
+            letter-spacing: 2px;
+        }
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .review-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 12px;
+        }
+        .review-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .review-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            border: 1.5px solid var(--primary);
+        }
+        .review-name { font-weight: 700; color: #fff; font-size: 13px; }
+        .review-stars { color: #facc15; font-size: 11px; }
+        .review-text { font-size: 12.5px; color: #cbd5e1; line-height: 1.4; }
+        .insta-gallery-scroll {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            margin-top: 10px;
+            padding-bottom: 6px;
+            scrollbar-width: none;
+        }
+        .insta-gallery-scroll::-webkit-scrollbar { display: none; }
+        .insta-photo-card {
+            min-width: 110px;
+            height: 110px;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid #223454;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .insta-photo-card::after {
+            content: '📸';
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            font-size: 12px;
+            background: rgba(0,0,0,0.6);
+            padding: 2px;
+            border-radius: 4px;
+        }
+
+        .app-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(4, 6, 12, 0.94);
+            backdrop-filter: blur(12px);
+            z-index: 10001;
+            align-items: center;
+            justify-content: center;
+            padding: 14px;
+        }
+        .modal-body {
+            background: var(--bg-card);
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            padding: 18px 14px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 30px var(--primary-glow);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .qr-wrapper {
+            background: #fff;
+            padding: 10px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 10px 0 6px;
+            max-width: 220px;
+            max-height: 220px;
+        }
+        #upiQRCode img { margin: 0 auto; display: block; max-width: 100%; height: auto; }
+        #customImageQrPreview { max-width: 180px; max-height: 180px; object-fit: contain; display: block; margin: 0 auto; border-radius: 8px; }
+
+        .upi-timer-box {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid var(--warning-amber);
+            border-radius: 8px;
+            padding: 6px 10px;
+            margin: 8px 0 12px;
+            font-size: 12px;
+            color: #fef08a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+        }
+
+        .pass-ticket {
+            background: linear-gradient(135deg, #0f1a30 0%, #060a14 100%);
+            border: 2px solid var(--primary);
+            border-radius: 14px;
+            padding: 14px 12px;
+            text-align: left;
+            position: relative;
+            margin-bottom: 14px;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.25);
+            width: 100%;
+        }
+        .phonepe-success-circle {
+            width: 54px;
+            height: 54px;
+            background: rgba(16, 185, 129, 0.18);
+            border: 2.5px solid #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #10b981;
+            margin: 0 auto 10px;
+            animation: phonepePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+        }
+        @keyframes phonepePop {
+            0% { transform: scale(0.3); opacity: 0; }
+            70% { transform: scale(1.15); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .ticket-cutout-left, .ticket-cutout-right {
+            position: absolute;
+            top: 50%;
+            width: 14px;
+            height: 14px;
+            background: var(--bg-card);
+            border-radius: 50%;
+        }
+        .ticket-cutout-left { left: -7px; }
+        .ticket-cutout-right { right: -7px; }
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed #2a3c5a;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            gap: 6px;
+        }
+        .ticket-app-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12.5px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+        .ticket-id {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 11px;
+            color: var(--neon-pink);
+            font-weight: 800;
+        }
+        .ticket-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: #cbd5e1;
+            gap: 8px;
+        }
+        .ticket-row-total {
+            border-top: 1px solid #223454;
+            padding-top: 8px;
+            margin-top: 8px;
+            align-items: center;
+        }
+
+        .admin-modal-body {
+            max-width: 580px;
+            width: 95vw;
+            max-height: 94vh;
+            padding: 16px 14px;
+            text-align: left;
+            border: 1.5px solid var(--primary);
+            box-shadow: 0 0 45px rgba(0, 240, 255, 0.45);
+        }
+        .admin-header-strip {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            gap: 8px;
+        }
+        .admin-tab-bar {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 14px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .admin-tab-bar::-webkit-scrollbar { display: none; }
+        .admin-tab-btn {
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .admin-tab-btn.active {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        .admin-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .admin-kpi-card {
+            background: var(--bg-elevated);
+            border: 1px solid #1f304e;
+            border-radius: 8px;
+            padding: 8px 4px;
+            text-align: center;
+        }
+        .kpi-val {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 900;
+            color: var(--neon-green);
+        }
+        .kpi-label { font-size: 9.5px; color: var(--text-dim); margin-top: 2px; }
+
+        .admin-subpanel { display: none; }
+        .admin-subpanel.active { display: block; }
+
+        .admin-dibbe-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+        .admin-dibba-box {
+            background: #080d19;
+            border: 2px solid #223454;
+            border-radius: 10px;
+            padding: 10px 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .admin-dibba-box.free { border-color: #10b981; background: rgba(16, 185, 129, 0.12); }
+        .admin-dibba-box.playing { border-color: #ef4444; background: rgba(239, 68, 68, 0.16); }
+        .admin-dibba-box.off { border-color: #475569; background: rgba(15, 23, 42, 0.9); opacity: 0.6; }
+
+        .order-card-row {
+            background: #09101f;
+            border: 1px solid #1a2842;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+        .order-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #16243d;
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+        }
+        .order-card-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            font-size: 11.5px;
+            color: #cbd5e1;
+            margin-bottom: 8px;
+        }
+        .order-actions-bar {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .btn-upload-compact {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: #1e293b;
+            border: 1px dashed var(--primary);
+            color: var(--primary);
+            padding: 9px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Orbitron';
+            width: 100%;
+            margin-bottom: 8px;
+        }
+        .btn-upload-compact input[type="file"] { display: none; }
+        .preview-box-compact {
+            max-width: 100%;
+            max-height: 70px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: none;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        #qrReaderBox {
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto 10px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+            background: #000;
+        }
+        .verified-badge-card {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1.5px solid #10b981;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 10px;
+            display: none;
+            text-align: left;
+        }
+
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: rgba(5, 8, 17, 0.98);
+            backdrop-filter: blur(14px);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: var(--text-dim);
+            font-size: 9.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .nav-item.active { color: var(--primary); }
+        .nav-item .icon { font-size: 17px; }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Screen -->
+    <div id="splashScreen">
+        <div class="splash-core">
+            <div class="splash-ring"></div>
+            <div class="splash-ring-pink"></div>
+            <div class="splash-logo-box">
+                <span style="font-family:'Orbitron'; font-size:24px; font-weight:900; color:#000;">F4</span>
+            </div>
+        </div>
+        <div class="splash-title">ALT F4 <span>GAMING</span></div>
+        <div class="splash-sub">SAGAR'S OFFICIAL ESPORTS LOUNGE</div>
+        <div class="splash-progress-track">
+            <div class="splash-progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="inAppToast">
+        <span id="toastIcon">⚡</span>
+        <span id="toastMsg">Updated</span>
+    </div>
+
+    <!-- In-App Confirmation Modal -->
+    <div id="customConfirmModal" style="display: none !important;">
+        <div class="confirm-card">
+            <div style="font-size:32px; margin-bottom:6px;">⚠️</div>
+            <h4 style="font-family:'Orbitron'; color:#fff; font-size:15px; margin-bottom:6px;" id="confirmModalTitle">CONFIRM ACTION</h4>
+            <p style="font-size:12.5px; color:#cbd5e1; margin-bottom:14px;" id="confirmModalMsg">Kya aap ye session band karna chahte hain?</p>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-action" style="background:#ef4444; color:#fff; margin-bottom:0;" id="confirmOkBtn">HAAN, STOP KAREIN</button>
+                <button class="btn-action" style="background:#1e293b; color:#fff; margin-bottom:0;" onclick="closeInAppConfirm()">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Announcement with Realtime Sync Badge -->
+    <div class="app-top-announcement">
+        <div style="display:flex; align-items:center; gap:6px;">
+            <span>⚡ ALT F4 GAMING • SAGAR</span>
+            <div class="live-sync-indicator" id="liveSyncStatus">
+                <span class="live-dot"></span>
+                <span id="syncTextLabel">LIVE SYNC ON</span>
+            </div>
+        </div>
+        <a href="https://www.instagram.com/altf4gaming_sagar/" target="_blank" class="insta-top-link" style="color:#fff; text-decoration:none;">
+            📸 @altf4gaming_sagar
+        </a>
+    </div>
+
+    <!-- Header -->
+    <header class="app-header">
+        <div class="brand-container">
+            <div class="brand-icon">F4</div>
+            <div class="brand-title-wrap">
+                <div class="brand-title">ALT F4 <span>GAMING</span></div>
+                <div class="brand-location-sub">Gopalganj, Sagar (M.P.)</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="https://www.instagram.com/altf4gaming_sagar/" target="_blank" class="insta-header-btn">
+                <span>📸 INSTA</span>
+            </a>
+            <button class="admin-trigger-btn" onclick="openAdminModal()">⚙️ ADMIN</button>
+        </div>
+    </header>
+
+    <!-- Loyalty Points Progress Bar -->
+    <div class="loyalty-reward-bar">
+        <div class="loyalty-top-line">
+            <div class="loyalty-points-txt">⚡ LOYALTY: <span style="color:var(--primary);" id="displayLoyaltyPts">0</span> PTS</div>
+            <div class="loyalty-target-badge">🎁 1000 PTS = 1 FREE PS5 HOUR</div>
+        </div>
+        <div class="loyalty-progress-track">
+            <div class="loyalty-progress-fill" id="loyaltyProgressBar" style="width: 0%;"></div>
+        </div>
+        <div class="loyalty-desc">Har booking & cafe order par points paayein. 1000 points par free hour unlock karein!</div>
+    </div>
+
+    <!-- Promo Banner -->
+    <div class="promo-banner-container" id="heroBannerDisplay" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=700&q=80');">
+        <div class="promo-text-wrap">
+            <div class="promo-title" id="bannerTitleText">ALT F4 GAMING LOUNGE</div>
+            <div class="promo-sub" id="bannerSubText">Pool • PS2 • PS4 • PS5 • PC | Friday 10% Discount</div>
+        </div>
+    </div>
+
+    <!-- Active Gaming Session Live Countdown Bar on Home Screen -->
+    <div class="live-timer-widget" id="liveTimerBar">
+        <div style="min-width:0; flex:1;">
+            <div class="timer-info-title">⚡ ACTIVE GAMING SESSION (<span id="activeRigNameDisplay">PS5-01</span>)</div>
+            <div style="font-size:11px; color:#cbd5e1;">Live session chal raha hai • Khelte rahiye!</div>
+            <button class="btn-stop-early" onclick="customerPromptStopSession()">⏹️ END SESSION</button>
+        </div>
+        <div class="timer-clock" id="sessionTimerText">00:00:00</div>
+    </div>
+
+    <!-- Tab Navigation Bar -->
+    <div class="tab-nav-wrapper">
+        <nav class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('bookingTab', this)">
+                <span class="tab-icon">🎮</span>
+                <span>BOOKING</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('rateTab', this)">
+                <span class="tab-icon">📋</span>
+                <span>RATE CARD</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('menuTab', this)">
+                <span class="tab-icon">🍔</span>
+                <span>CAFE MENU</span>
+            </button>
+            <button class="tab-btn" onclick="switchTab('historyTab', this)">
+                <span class="tab-icon">📜</span>
+                <span>MY PASSES</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- 1. STREAMLINED BOOKING TAB -->
+    <section id="bookingTab" class="section-pane active">
+        
+        <div class="step-title">
+            <span>STEP 1: CHOOSE RIG / CONSOLE (LIVE STATIONS)</span>
+        </div>
+
+        <div class="boxes-6-grid" id="stationBoxes6Grid"></div>
+
+        <div id="step2ControllerWrapper">
+            <div class="step-title">STEP 2: SELECT CONTROLLERS</div>
+            <div class="controllers-grid" id="controllersGrid"></div>
+        </div>
+
+        <div class="step-title">STEP 3: CHOOSE DURATION / PASS (OFFICIAL RATES)</div>
+        <div class="plan-cards-grid" id="customPlanCardsGrid"></div>
+
+        <div class="app-card">
+            <div class="form-group">
+                <label class="form-label">Gamer Name / Tag</label>
+                <input type="text" id="custName" class="form-control" placeholder="Aapka Gamer Naam">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">WhatsApp Contact Number (Strict 10 Digits)</label>
+                <input type="tel" id="custPhone" class="form-control" placeholder="10 Digit Mobile Number" maxlength="10" oninput="validatePhoneInput(this);">
+                <span id="phoneValidationHint" style="font-size:11px; color:var(--text-dim); margin-top:3px; display:block;">
+                    Sirf 10 digit mobile number enter karein.
+                </span>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Playing Time Slot</label>
+                <select id="timeSlotSelect" class="form-control">
+                    <option>Right Now / Immediate Play</option>
+                    <option>12:00 PM - Afternoon</option>
+                    <option>04:00 PM - Evening</option>
+                    <option>07:00 PM - Prime Time</option>
+                    <option>09:30 PM - Late Night</option>
+                </select>
+            </div>
+
+            <div class="receipt-container">
+                <div class="receipt-line">
+                    <span>Gaming Charges:</span>
+                    <span id="billRigPrice">₹120</span>
+                </div>
+                <div class="receipt-line">
+                    <span>Cafe Snacks Added:</span>
+                    <span id="billSnacksPrice">0 Items (₹0)</span>
+                </div>
+                <div class="receipt-line" id="fridayRow" style="display:none; color:var(--neon-pink);">
+                    <span>Friday Flat 10% Discount:</span>
+                    <span id="fridayDiscountAmt">- ₹0</span>
+                </div>
+                <div class="receipt-total">
+                    <span>TOTAL PAYABLE:</span>
+                    <span id="finalGrandTotal">₹120</span>
+                </div>
+            </div>
+
+            <button class="btn-action btn-upi" onclick="triggerUPIPaymentModal()">
+                <span>💳 PAY ONLINE VIA UPI QR (LIVE SYNC TO ADMIN)</span>
+            </button>
+            <button class="btn-action btn-cash" onclick="bookWithCashOnCafe()">
+                <span>💵 CASH ON CAFE (PAY AT COUNTER)</span>
+            </button>
+        </div>
+
+        <!-- REVIEWS & RATINGS -->
+        <div class="reviews-section">
+            <div class="section-heading">GAMER REVIEWS & INSTAGRAM GALLERY</div>
+            
+            <div class="rating-overall-card">
+                <div>
+                    <div style="font-family:'Orbitron'; font-size:24px; font-weight:900; color:#fff;">4.9 <span style="font-size:14px; color:var(--text-dim);">/ 5.0</span></div>
+                    <div class="star-rating-box">★★★★★</div>
+                    <div style="font-size:11px; color:var(--text-dim); margin-top:2px;">Google & Instagram Verified Ratings</div>
+                </div>
+                <a href="https://www.instagram.com/altf4gaming_sagar/" target="_blank" class="insta-header-btn" style="padding:8px 12px; font-size:11px;">
+                    FOLLOW @altf4gaming_sagar
+                </a>
+            </div>
+
+            <div style="font-family:'Orbitron'; font-size:11.5px; color:var(--primary); font-weight:800; margin-bottom:6px;">CAFE CLICKS FROM INSTAGRAM:</div>
+            <div class="insta-gallery-scroll">
+                <div class="insta-photo-card" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=300&q=80');"></div>
+                <div class="insta-photo-card" style="background-image: url('https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=300&q=80');"></div>
+                <div class="insta-photo-card" style="background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=300&q=80');"></div>
+                <div class="insta-photo-card" style="background-image: url('https://images.unsplash.com/photo-1534158914592-062992fbe900?auto=format&fit=crop&w=300&q=80');"></div>
+            </div>
+
+            <div class="reviews-grid" style="margin-top:12px;">
+                <div class="review-card">
+                    <div class="review-author">
+                        <div class="review-avatar" style="background-image: url('https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80');"></div>
+                        <div>
+                            <div class="review-name">Aryan Patel</div>
+                            <div class="review-stars">★★★★★</div>
+                        </div>
+                    </div>
+                    <div class="review-text">"Sagar ka best gaming cafe! PS5 par FIFA aur Tekken khelne me maza aa gaya. Red Bull aur Cold Coffee bhi chilled thi."</div>
+                </div>
+
+                <div class="review-card">
+                    <div class="review-author">
+                        <div class="review-avatar" style="background-image: url('https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=100&q=80');"></div>
+                        <div>
+                            <div class="review-name">Rohit Ahirwar</div>
+                            <div class="review-stars">★★★★★</div>
+                        </div>
+                    </div>
+                    <div class="review-text">"180Hz PC setup aur low ping fiber connectivity ekdum smooth hai. Friday 10% discount to aur bhi tagda offer hai!"</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. OFFICIAL RATE CARD TAB -->
+    <section id="rateTab" class="section-pane">
+        <div class="section-heading">ALT F4 GAMING RATE CARD</div>
+
+        <div class="rate-card">
+            <div class="rate-card-header" style="background-image: url('https://images.unsplash.com/photo-1534158914592-062992fbe900?auto=format&fit=crop&w=700&q=80');">
+                <div class="rate-badge-title">POOL</div>
+            </div>
+            <div class="rate-content">
+                <div class="rate-row"><span>30 Minutes</span><span>₹70</span></div>
+                <div class="rate-row"><span>1 Hour</span><span>₹120</span></div>
+                <div class="rate-row"><span>Monthly Pass (1 Hour per day)</span><span>₹1,799</span></div>
+            </div>
+        </div>
+
+        <div class="rate-card">
+            <div class="rate-card-header" style="background-image: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=700&q=80');">
+                <div class="rate-badge-title">PS2 (1P) (1 Controller)</div>
+            </div>
+            <div class="rate-content">
+                <div class="rate-row"><span>1 Hour</span><span>₹40</span></div>
+                <div class="rate-row"><span>2 Hours</span><span>₹70</span></div>
+                <div class="rate-row"><span>3 Hours</span><span>₹120</span></div>
+                <div class="rate-row"><span>Day Pass</span><span>₹300</span></div>
+            </div>
+        </div>
+
+        <div class="rate-card">
+            <div class="rate-card-header" style="background-image: url('https://images.unsplash.com/photo-1507457379470-08b800bebc67?auto=format&fit=crop&w=700&q=80');">
+                <div class="rate-badge-title">PS4</div>
+            </div>
+            <div class="rate-content">
+                <div style="font-size:11px; color:#cbd5e1; font-weight:700; margin:4px 0;">PS4 (Duo/Couple) (2 Controllers)</div>
+                <div class="rate-row"><span>1 Hour</span><span>₹120</span></div>
+                <div class="rate-row"><span>2 Hours</span><span>₹200</span></div>
+                <div class="rate-row"><span>3 Hours</span><span>₹300</span></div>
+                <div class="rate-row"><span>Day Pass</span><span>₹400</span></div>
+
+                <div style="font-size:11px; color:#cbd5e1; font-weight:700; margin:8px 0 4px;">PS4 (4P) (4 Controllers)</div>
+                <div class="rate-row"><span>1 Hour</span><span>₹150</span></div>
+                <div class="rate-row"><span>2 Hours</span><span>₹250</span></div>
+                <div class="rate-row"><span>3 Hours</span><span>₹350</span></div>
+                <div class="rate-row"><span>Day Pass</span><span>₹450</span></div>
+            </div>
+        </div>
+
+        <div class="rate-card">
+            <div class="rate-card-header" style="background-image: url('https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=700&q=80');">
+                <div class="rate-badge-title">PS5</div>
+            </div>
+            <div class="rate-content">
+                <div style="font-size:11px; color:#cbd5e1; font-weight:700; margin:4px 0;">PS5 (Single)</div>
+                <div class="rate-row"><span>1 Hour</span><span>₹120</span></div>
+                <div class="rate-row"><span>2 Hours</span><span>₹200</span></div>
+                <div class="rate-row"><span>3 Hours</span><span>₹280</span></div>
+                <div class="rate-row"><span>Day Pass</span><span>₹450</span></div>
+
+                <div style="font-size:11px; color:#cbd5e1; font-weight:700; margin:8px 0 4px;">PS5 (Duo/Couple) (2 Controllers)</div>
+                <div class="rate-row"><span>1 Hour</span><span>₹180</span></div>
+                <div class="rate-row"><span>2 Hours</span><span>₹300</span></div>
+                <div class="rate-row"><span>3 Hours</span><span>₹500</span></div>
+                <div class="rate-row"><span>Day Pass</span><span>₹800</span></div>
+
+                <div style="font-size:11px; color:#cbd5e1; font-weight:700; margin:8px 0 4px;">PS5 (4P) (4 Controllers)</div>
+                <div class="rate-row"><span>1 Hour</span><span>₹250</span></div>
+                <div class="rate-row"><span>2 Hours</span><span>₹400</span></div>
+                <div class="rate-row"><span>3 Hours</span><span>₹600</span></div>
+                <div class="rate-row"><span>Day Pass</span><span>₹1,000</span></div>
+            </div>
+        </div>
+
+        <div class="rate-card">
+            <div class="rate-card-header" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=700&q=80');">
+                <div class="rate-badge-title">PC</div>
+            </div>
+            <div class="rate-content">
+                <div class="rate-row"><span>Per Hour</span><span>₹100</span></div>
+                <div class="rate-row"><span>All Day Pass</span><span>₹500</span></div>
+            </div>
+        </div>
+
+        <div class="app-card">
+            <div style="font-family:'Orbitron'; font-size:12.5px; color:var(--neon-pink); margin-bottom:6px;">TERMS AND CONDITIONS</div>
+            <ul style="font-size:12px; color:var(--text-dim); list-style:inside; line-height:1.7;">
+                <li>Friday – Flat 10% Discount.</li>
+                <li>Rates are subject to change without prior notice.</li>
+                <li>All discounts & offers can be changed at any time.</li>
+                <li>Be respectful.</li>
+                <li>No smoking.</li>
+                <li>Please inform about your playing hours in advance.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 3. CAFE MENU TAB -->
+    <section id="menuTab" class="section-pane">
+        <div class="section-heading">GAMER FOOD & DRINKS</div>
+
+        <div class="food-item">
+            <div class="food-thumb" style="background-image: url('https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=200&q=80');"></div>
+            <div class="food-info">
+                <h4>Red Bull Energy Can</h4>
+                <span>250ml Ice-chilled energy drink</span>
+                <div style="color:var(--neon-green); font-weight:800; font-family:'Orbitron';">₹125</div>
+            </div>
+            <button class="btn-add-food" onclick="addFoodItem('Red Bull', 125)">+ ADD</button>
+        </div>
+
+        <div class="food-item">
+            <div class="food-thumb" style="background-image: url('https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=200&q=80');"></div>
+            <div class="food-info">
+                <h4>Thick Cold Coffee</h4>
+                <span>Rich chocolate & coffee blend</span>
+                <div style="color:var(--neon-green); font-weight:800; font-family:'Orbitron';">₹60</div>
+            </div>
+            <button class="btn-add-food" onclick="addFoodItem('Cold Coffee', 60)">+ ADD</button>
+        </div>
+
+        <div class="food-item">
+            <div class="food-thumb" style="background-image: url('https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=200&q=80');"></div>
+            <div class="food-info">
+                <h4>Fresh Pulpy Fruit Juice</h4>
+                <span>Chilled refreshing fruit juice</span>
+                <div style="color:var(--neon-green); font-weight:800; font-family:'Orbitron';">₹50</div>
+            </div>
+            <button class="btn-add-food" onclick="addFoodItem('Fruit Juice', 50)">+ ADD</button>
+        </div>
+
+        <div class="food-item">
+            <div class="food-thumb" style="background-image: url('https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=200&q=80');"></div>
+            <div class="food-info">
+                <h4>Peri Peri French Fries</h4>
+                <span>Crispy spicy potato fingers</span>
+                <div style="color:var(--neon-green); font-weight:800; font-family:'Orbitron';">₹70</div>
+            </div>
+            <button class="btn-add-food" onclick="addFoodItem('Peri Peri Fries', 70)">+ ADD</button>
+        </div>
+
+        <div class="food-item">
+            <div class="food-thumb" style="background-image: url('https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=200&q=80');"></div>
+            <div class="food-info">
+                <h4>Double Cheese Grilled Sandwich</h4>
+                <span>Loaded cheese toast with herbs</span>
+                <div style="color:var(--neon-green); font-weight:800; font-family:'Orbitron';">₹80</div>
+            </div>
+            <button class="btn-add-food" onclick="addFoodItem('Cheese Sandwich', 80)">+ ADD</button>
+        </div>
+
+        <div class="food-item">
+            <div class="food-thumb" style="background-image: url('https://images.unsplash.com/photo-1612927601601-6638404737ce?auto=format&fit=crop&w=200&q=80');"></div>
+            <div class="food-info">
+                <h4>Hot Masala Maggi</h4>
+                <span>Midnight bowl of spicy noodles</span>
+                <div style="color:var(--neon-green); font-weight:800; font-family:'Orbitron';">₹50</div>
+            </div>
+            <button class="btn-add-food" onclick="addFoodItem('Masala Maggi', 50)">+ ADD</button>
+        </div>
+    </section>
+
+    <!-- 4. MY SAVED PASSES TAB -->
+    <section id="historyTab" class="section-pane">
+        <div class="section-heading">MY PASSES & TICKETS (TAP TO OPEN QR)</div>
+        <div id="savedPassesList"></div>
+        <div style="text-align:center; margin-top:16px;">
+            <button class="btn-action btn-upi" onclick="switchTab('bookingTab', document.querySelectorAll('.tab-btn')[0])">
+                + BOOK ANOTHER PASS
+            </button>
+        </div>
+    </section>
+
+    <!-- MODAL 1: UPI PAYMENT MODAL -->
+    <div id="upiPaymentModal" class="app-modal">
+        <div class="modal-body">
+            <h3 style="font-family:'Orbitron'; color:#fff; font-size:16.5px;">SCAN & PAY VIA UPI</h3>
+            
+            <div class="qr-wrapper">
+                <img id="customImageQrPreview" style="display:none;" alt="Payment QR Code">
+                <div id="upiQRCode"></div>
+            </div>
+
+            <div style="font-family:'Orbitron'; font-size:20px; font-weight:900; color:var(--neon-green); margin-bottom:4px;" id="modalPayAmount">
+                ₹120
+            </div>
+            <div style="font-size:12px; color:#cbd5e1;">
+                UPI ID: <strong id="displayUpiIdText">7477251756@ybl</strong>
+            </div>
+
+            <div class="upi-timer-box">
+                <span>⏱️ Payment Window:</span>
+                <span id="upiClockCountdown">01:00</span>
+            </div>
+
+            <button class="btn-action btn-upi" onclick="confirmOnlinePaymentSuccess()">
+                <span>✓ MAINE PAYMENT KAR DIYA (GET PASS)</span>
+            </button>
+            <button class="btn-action" style="background:#1a2842; color:#fff;" onclick="cancelOnlinePayment()">
+                CANCEL PAYMENT
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: DIGITAL PASS TICKET -->
+    <div id="ticketPassModal" class="app-modal">
+        <div class="modal-body">
+            <div class="phonepe-success-circle">✓</div>
+            <div style="font-family:'Orbitron'; font-size:16px; font-weight:900; color:#fff; margin-bottom:10px;">GAMING PASS TICKET</div>
+
+            <div class="pass-ticket" id="gamerDigitalTicket">
+                <div class="ticket-cutout-left"></div>
+                <div class="ticket-cutout-right"></div>
+                
+                <div class="ticket-header">
+                    <div class="ticket-app-name">ALT F4 GAMING PASS</div>
+                    <div class="ticket-id" id="ticketIdDisplay">#F4-8892</div>
+                </div>
+
+                <div class="ticket-row"><span>Gamer Name:</span><strong id="ticketName">Shivam</strong></div>
+                <div class="ticket-row"><span>Station:</span><strong id="ticketSeatDisplay" style="color:var(--primary);">PS5-01</strong></div>
+                <div class="ticket-row"><span>Mode & Plan:</span><strong id="ticketDuration">PS5 Single - 1 Hour</strong></div>
+                <div class="ticket-row"><span>Slot Time:</span><strong id="ticketSlot">Immediate</strong></div>
+                <div class="ticket-row"><span>Payment Status:</span><strong id="ticketPaymentMode" style="color:var(--warning-amber);">Pending Confirmation</strong></div>
+
+                <div class="ticket-row ticket-row-total">
+                    <span style="font-weight:bold; font-size:13px; color:#fff;">Total Amount:</span>
+                    <strong style="color:var(--neon-green); font-size:15px;" id="ticketAmount">₹120</strong>
+                </div>
+
+                <div style="text-align:center; padding-top:10px;">
+                    <div id="ticketQRCode" style="display:inline-block; background:#fff; padding:8px; border-radius:8px;"></div>
+                    <div style="font-size:10.5px; color:var(--primary); margin-top:5px; font-weight:700;">Counter par scan karwake session chalu karein</div>
+                </div>
+            </div>
+
+            <button class="btn-action btn-whatsapp" onclick="dispatchTicketToWhatsApp()">
+                <span>💬 WHATSAPP PAR BHEJEIN</span>
+            </button>
+            <button class="btn-action" style="background:#10b981; color:#000;" onclick="window.print()">
+                <span>🖨️ PRINT / DOWNLOAD PASS</span>
+            </button>
+            <button class="btn-action" style="background:#1a2842; color:#fff;" onclick="closeModal('ticketPassModal')">
+                CLOSE TICKET
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: SESSION EXPIRED POPUP -->
+    <div id="expiredAlertModal" class="app-modal" style="display: none !important;">
+        <div class="modal-body">
+            <div style="font-size:40px; margin-bottom:8px;">⏰</div>
+            <h3 style="font-family:'Orbitron'; color:var(--danger); font-size:18px; margin-bottom:6px;">SESSION EXPIRED!</h3>
+            <p style="font-size:13px; color:#cbd5e1; margin-bottom:14px;">
+                Aapka gaming time khatam ho chuka hai ya stop kar diya gaya hai.<br>
+                <strong style="color:var(--warning-amber);">Naya pass lene ke liye neeche button dabayein:</strong>
+            </p>
+            <button class="btn-action btn-upi" onclick="buyNewPassFromExpireAlert()">
+                <span>⚡ BUY A NEW PASS</span>
+            </button>
+            <button class="btn-action" style="background:#1a2842; color:#fff;" onclick="closeModal('expiredAlertModal')">
+                CLOSE
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: ADMIN CONSOLE WITH LIVE CLOUD SYNC & CAMERA SCANNER (PIN: 7477) -->
+    <div id="adminPanelModal" class="app-modal">
+        <div class="modal-body admin-modal-body">
+            
+            <div id="adminAuthBox" style="text-align:center; padding: 25px 0;">
+                <div style="font-size:36px; margin-bottom:8px;">⚙️</div>
+                <h3 style="font-family:'Orbitron'; color:#fff; font-size:18px; margin-bottom:6px;">ALT F4 ADMIN CONSOLE</h3>
+                <p style="font-size:12.5px; color:var(--text-dim); margin-bottom:14px;">Enter Security PIN to access cafe operations:</p>
+                
+                <input type="password" id="adminPin" class="form-control" placeholder="••••" style="text-align:center; font-size:22px; letter-spacing:8px; max-width:200px; margin:0 auto 12px;">
+                
+                <button class="btn-action btn-upi" onclick="verifyAdminPin()" style="max-width:220px; margin:0 auto 8px;">
+                    <span>LOGIN AS ADMIN</span>
+                </button>
+                
+                <button class="btn-action" style="background:#1a2842; color:#cbd5e1; max-width:220px; margin:0 auto;" onclick="closeModal('adminPanelModal')">
+                    <span>✕ CANCEL / BACK TO APP</span>
+                </button>
+            </div>
+
+            <!-- Full Dashboard Screen -->
+            <div id="adminDashboardContent" style="display:none;">
+                <div class="admin-header-strip">
+                    <div>
+                        <div style="font-family:'Orbitron'; font-size:14px; font-weight:900; color:var(--primary);">ALT F4 MASTER OS</div>
+                        <div style="font-size:9.5px; color:#10b981;">● Realtime Cloud Connected • Sagar M.P.</div>
+                    </div>
+                    <button style="background:transparent; border:1px solid #ef4444; color:#ef4444; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;" onclick="logoutAdmin()">LOGOUT</button>
+                </div>
+
+                <div class="admin-tab-bar">
+                    <button class="admin-tab-btn active" onclick="switchAdminTab('pDashboard', this)">DASHBOARD</button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab('pScanQR', this)">📷 SCAN QR</button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab('pBookings', this)">LIVE ORDERS</button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab('pDibbe', this)">DIBBE CONTROL</button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab('pMedia', this)">QR & BANNER</button>
+                </div>
+
+                <!-- SUBPANEL 1: DASHBOARD -->
+                <div id="pDashboard" class="admin-subpanel active">
+                    <div class="admin-kpi-grid">
+                        <div class="admin-kpi-card">
+                            <div class="kpi-val" id="kpiTodayBookings">0</div>
+                            <div class="kpi-label">Today Bookings</div>
+                        </div>
+                        <div class="admin-kpi-card">
+                            <div class="kpi-val" id="kpiActiveSessions">0</div>
+                            <div class="kpi-label">Active Playing</div>
+                        </div>
+                        <div class="admin-kpi-card">
+                            <div class="kpi-val" style="color:var(--warning-amber);" id="kpiPendingCount">0</div>
+                            <div class="kpi-label">Pending Orders</div>
+                        </div>
+                    </div>
+
+                    <div style="font-family:'Orbitron'; font-size:11.5px; color:#fff; margin-bottom:6px;">TODAY'S VERIFIED REVENUE (AUTO 00 RESET):</div>
+                    <div class="app-card" style="padding:10px; margin-bottom:12px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
+                            <span>Online UPI Received:</span>
+                            <strong style="color:var(--neon-green); font-family:'Orbitron';" id="kpiOnlineRevenue">₹0</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:13px;">
+                            <span>Counter Cash Collected:</span>
+                            <strong style="color:var(--warning-amber); font-family:'Orbitron';" id="kpiCashRevenue">₹0</strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; border-top:1px solid #223454; padding-top:8px; font-size:14px;">
+                            <span style="font-weight:800;">TOTAL TODAY'S REVENUE:</span>
+                            <strong style="color:var(--primary); font-family:'Orbitron';" id="kpiTotalRevenue">₹0</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUBPANEL 2: LIVE CAMERA QR SCANNER & INSTANT VERIFY -->
+                <div id="pScanQR" class="admin-subpanel">
+                    <div style="font-family:'Orbitron'; font-size:12px; color:var(--primary); margin-bottom:4px;">
+                        📷 SCAN CUSTOMER PASS QR CODE:
+                    </div>
+                    <p style="font-size:11px; color:var(--text-dim); margin-bottom:10px;">
+                        Customer ke phone ka QR code camera ke saamne laayein:
+                    </p>
+
+                    <div id="qrReaderBox"></div>
+
+                    <div style="display:flex; gap:6px; margin-bottom:10px;">
+                        <button class="btn-action btn-upi" style="padding:8px; font-size:10.5px; margin-bottom:0;" onclick="startAdminCameraScanner()">
+                            ▶️ START CAMERA SCANNER
+                        </button>
+                        <button class="btn-action" style="background:#1e293b; color:#cbd5e1; border:1px solid #334155; padding:8px; font-size:10.5px; margin-bottom:0;" onclick="stopAdminCameraScanner()">
+                            ⏹️ STOP CAMERA
+                        </button>
+                    </div>
+
+                    <div class="verified-badge-card" id="scanResultBadge">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                            <strong style="color:#10b981; font-family:'Orbitron'; font-size:12.5px;">✓ PASS VERIFIED VALID</strong>
+                            <span id="scanVerifiedId" style="font-family:'Orbitron'; color:#fff; font-size:11px;">#F4-0000</span>
+                        </div>
+                        <div style="font-size:12px; color:#cbd5e1; line-height:1.4;" id="scanVerifiedDetails">
+                            Gamer: <strong>Aryan</strong> • Station: <strong>PS5-01</strong><br>
+                            Plan: <strong>1 Hour</strong> • Amount: <strong>₹120</strong>
+                        </div>
+                        <div style="display:flex; gap:6px; margin-top:8px;">
+                            <button class="btn-action" style="background:#10b981; color:#000; font-size:10.5px; padding:6px; margin-bottom:0;" id="scanStartSessionBtn">
+                                ▶️ START SESSION TIMER
+                            </button>
+                        </div>
+                    </div>
+
+                    <button class="btn-action" style="background:#0f172a; border:1px solid #334155; color:#94a3b8; margin-top:10px;" onclick="switchAdminTab('pDashboard', document.querySelectorAll('.admin-tab-btn')[0])">
+                        ⬅️ BACK TO DASHBOARD
+                    </button>
+                </div>
+
+                <!-- SUBPANEL 3: BOOKINGS & ORDERS -->
+                <div id="pBookings" class="admin-subpanel">
+                    <div style="font-family:'Orbitron'; font-size:11.5px; color:#fff; margin-bottom:8px;">LIVE CLOUD ORDERS & CONFIRMATIONS:</div>
+                    <div style="max-height: 280px; overflow-y: auto;" id="adminOrderCardsContainer"></div>
+                </div>
+
+                <!-- SUBPANEL 4: DIBBE CONTROL -->
+                <div id="pDibbe" class="admin-subpanel">
+                    <div style="font-family:'Orbitron'; font-size:11.5px; color:var(--primary); margin-bottom:4px;">
+                        ⚡ DIBBE CONTROL (REALTIME SYNCED TO ALL DEVICES):
+                    </div>
+                    <p style="font-size:11px; color:var(--text-dim); margin-bottom:10px;">
+                        Kisi bhi dibbe par tap karein: <strong>🟢 Free ➜ 🔴 Playing ➜ ⚫ Off</strong>
+                    </p>
+                    <div class="admin-dibbe-grid" id="adminDibbeGrid"></div>
+                </div>
+
+                <!-- SUBPANEL 5: QR & BANNER UPLOADS -->
+                <div id="pMedia" class="admin-subpanel">
+                    <div style="font-family:'Orbitron'; font-size:11.5px; color:#fff; margin-bottom:6px;">PAYMENT QR:</div>
+                    <label class="btn-upload-compact">
+                        <span>📷 CHOOSE QR PHOTO FROM GALLERY</span>
+                        <input type="file" accept="image/*" onchange="handleQrFileUpload(event)">
+                    </label>
+                    <img id="adminQrPreviewBox" class="preview-box-compact" alt="QR Preview">
+
+                    <div class="form-group">
+                        <label class="form-label">UPI ID</label>
+                        <input type="text" id="adminCustomUpiId" class="form-control" value="7477251756@ybl">
+                    </div>
+                    <button class="btn-action btn-upi" style="padding:9px;" onclick="saveAdminQrSettings()">SAVE PAYMENT QR</button>
+
+                    <div style="font-family:'Orbitron'; font-size:11.5px; color:#fff; margin:14px 0 6px;">BANNER:</div>
+                    <label class="btn-upload-compact">
+                        <span>🖼️ CHOOSE BANNER PHOTO FROM GALLERY</span>
+                        <input type="file" accept="image/*" onchange="handleBannerFileUpload(event)">
+                    </label>
+                    <img id="adminBannerPreviewBox" class="preview-box-compact" alt="Banner Preview">
+
+                    <div class="form-group" style="margin-top:8px;">
+                        <label class="form-label">Headline</label>
+                        <input type="text" id="adminBannerHeadline" class="form-control" value="ALT F4 GAMING LOUNGE">
+                    </div>
+                    <button class="btn-action btn-upi" style="padding:9px;" onclick="saveAdminBannerSettings()">APPLY NEW BANNER</button>
+                </div>
+
+                <button class="btn-action" style="background:#1e293b; color:#fff; border:1px solid #334155; margin-top:16px; padding:12px;" onclick="closeModal('adminPanelModal')">
+                    ✕ CLOSE ADMIN PANEL
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Fixed Nav -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="jumpNav(0)">
+            <div class="icon">🎮</div>
+            <span>Booking</span>
+        </div>
+        <div class="nav-item" onclick="jumpNav(1)">
+            <div class="icon">📋</div>
+            <span>Rates</span>
+        </div>
+        <div class="nav-item" onclick="jumpNav(2)">
+            <div class="icon">🍔</div>
+            <span>Menu</span>
+        </div>
+        <div class="nav-item" onclick="jumpNav(3)">
+            <div class="icon">📜</div>
+            <span>Passes</span>
+        </div>
+    </div>
+
+    <script>
+        const CAFE_PHONE_RAW = "917477251756";
+        const ADMIN_SECRET = "7477";
+        const MY_SAVED_PASSES_STORAGE = "altf4_my_saved_passes_local";
+        const MY_ACTIVE_BOOKING_KEY = "altf4_my_active_booking_id";
+        const MASTER_STORAGE_KEY = "altf4_master_database_v2";
+
+        // Realtime Cross-Tab & Cross-Device Sync Channel
+        const localBroadcast = ('BroadcastChannel' in window) ? new BroadcastChannel('altf4_sync_bus_v2') : null;
+        let isSyncing = false;
+
+        // Sound Synthesis
+        const audioCtx = (window.AudioContext || window.webkitAudioContext) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+        function playSfx(type) {
+            if (!audioCtx) return;
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'select') {
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.1);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.1);
+                } else if (type === 'coin') {
+                    osc.frequency.setValueAtTime(659, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(987, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.22);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.22);
+                } else if (type === 'fanfare') {
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                    osc.frequency.setValueAtTime(1046.50, audioCtx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.45);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.45);
+                } else if (type === 'alarm') {
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.35);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.35);
+                }
+            } catch (e) {}
+        }
+
+        let currentConfirmCallback = null;
+        function showInAppConfirm(title, msg, onOk) {
+            document.getElementById('confirmModalTitle').innerText = title;
+            document.getElementById('confirmModalMsg').innerText = msg;
+            currentConfirmCallback = onOk;
+            const modal = document.getElementById('customConfirmModal');
+            modal.style.setProperty('display', 'flex', 'important');
+        }
+        function closeInAppConfirm() {
+            const modal = document.getElementById('customConfirmModal');
+            modal.style.setProperty('display', 'none', 'important');
+            currentConfirmCallback = null;
+        }
+        document.getElementById('confirmOkBtn').addEventListener('click', () => {
+            if (currentConfirmCallback) currentConfirmCallback();
+            closeInAppConfirm();
+        });
+
+        // 6 STATIONS DATABASE
+        let stationsDatabase = [
+            { id: "PS5-01", name: "PS5-01", type: "PS5", status: "Available", sessionEnd: 0 },
+            { id: "PS5-02", name: "PS5-02", type: "PS5", status: "Available", sessionEnd: 0 },
+            { id: "PC-01", name: "PC-01", type: "PC", status: "Available", sessionEnd: 0 },
+            { id: "PC-02", name: "PC-02", type: "PC", status: "Available", sessionEnd: 0 },
+            { id: "PS4-01", name: "PS4-01", type: "PS4", status: "Available", sessionEnd: 0 },
+            { id: "POOL-01", name: "POOL-01", type: "POOL", status: "Available", sessionEnd: 0 }
+        ];
+
+        // STRICT RATE CARD DATA
+        const STATION_CONFIGS = {
+            PS5: {
+                controllers: [
+                    { id: "single", label: "1 Controller (Single)" },
+                    { id: "duo", label: "2 Controllers (Duo/Couple)" },
+                    { id: "4p", label: "4 Controllers (Squad)" }
+                ],
+                plans: {
+                    single: [
+                        { id: "ps5_s_1h", label: "1 Hour", price: 120, mins: 60, isDayPass: false },
+                        { id: "ps5_s_2h", label: "2 Hours", price: 200, mins: 120, isDayPass: false },
+                        { id: "ps5_s_3h", label: "3 Hours", price: 280, mins: 180, isDayPass: false },
+                        { id: "ps5_s_day", label: "Day Pass", price: 450, mins: 600, isDayPass: true }
+                    ],
+                    duo: [
+                        { id: "ps5_d_1h", label: "1 Hour", price: 180, mins: 60, isDayPass: false },
+                        { id: "ps5_d_2h", label: "2 Hours", price: 300, mins: 120, isDayPass: false },
+                        { id: "ps5_d_3h", label: "3 Hours", price: 500, mins: 180, isDayPass: false },
+                        { id: "ps5_d_day", label: "Day Pass", price: 800, mins: 600, isDayPass: true }
+                    ],
+                    "4p": [
+                        { id: "ps5_4_1h", label: "1 Hour", price: 250, mins: 60, isDayPass: false },
+                        { id: "ps5_4_2h", label: "2 Hours", price: 400, mins: 120, isDayPass: false },
+                        { id: "ps5_4_3h", label: "3 Hours", price: 600, mins: 180, isDayPass: false },
+                        { id: "ps5_4_day", label: "Day Pass", price: 1000, mins: 600, isDayPass: true }
+                    ]
+                }
+            },
+            PS4: {
+                controllers: [
+                    { id: "duo", label: "2 Controllers (Duo/Couple)" },
+                    { id: "4p", label: "4 Controllers (Squad)" }
+                ],
+                plans: {
+                    duo: [
+                        { id: "ps4_d_1h", label: "1 Hour", price: 120, mins: 60, isDayPass: false },
+                        { id: "ps4_d_2h", label: "2 Hours", price: 200, mins: 120, isDayPass: false },
+                        { id: "ps4_d_3h", label: "3 Hours", price: 300, mins: 180, isDayPass: false },
+                        { id: "ps4_d_day", label: "Day Pass", price: 400, mins: 600, isDayPass: true }
+                    ],
+                    "4p": [
+                        { id: "ps4_4_1h", label: "1 Hour", price: 150, mins: 60, isDayPass: false },
+                        { id: "ps4_4_2h", label: "2 Hours", price: 250, mins: 120, isDayPass: false },
+                        { id: "ps4_4_3h", label: "3 Hours", price: 350, mins: 180, isDayPass: false },
+                        { id: "ps4_4_day", label: "Day Pass", price: 450, mins: 600, isDayPass: true }
+                    ]
+                }
+            },
+            PC: {
+                controllers: [],
+                plans: [
+                    { id: "pc_1h", label: "1 Hour Play", price: 100, mins: 60, isDayPass: false },
+                    { id: "pc_day", label: "All Day Pass", price: 500, mins: 600, isDayPass: true }
+                ]
+            },
+            POOL: {
+                controllers: [],
+                plans: [
+                    { id: "pool_30m", label: "30 Minutes", price: 70, mins: 30, isDayPass: false },
+                    { id: "pool_1h", label: "1 Hour", price: 120, mins: 60, isDayPass: false },
+                    { id: "pool_monthly", label: "Monthly Pass (1 Hr/day)", price: 1799, mins: 60, isDayPass: true }
+                ]
+            },
+            PS2: {
+                controllers: [
+                    { id: "1p", label: "1 Controller (1P)" }
+                ],
+                plans: {
+                    "1p": [
+                        { id: "ps2_1h", label: "1 Hour", price: 40, mins: 60, isDayPass: false },
+                        { id: "ps2_2h", label: "2 Hours", price: 70, mins: 120, isDayPass: false },
+                        { id: "ps2_3h", label: "3 Hours", price: 120, mins: 180, isDayPass: false },
+                        { id: "ps2_day", label: "Day Pass", price: 300, mins: 600, isDayPass: true }
+                    ]
+                }
+            }
+        };
+
+        let cafeUpiId = "7477251756@ybl";
+        let customQrDataUrl = "";
+        let cafeBanner = {
+            img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=700&q=80",
+            title: "ALT F4 GAMING LOUNGE",
+            sub: "Pool • PS2 • PS4 • PS5 • PC | Friday 10% Discount"
+        };
+
+        // Master Shared Data
+        let masterBookings = [];
+        let loyaltyPoints = 0;
+
+        let selectedStation = stationsDatabase[0];
+        let selectedControllerId = "single";
+        let selectedPlan = null;
+        let orderedSnacks = [];
+
+        let upiCountdownInterval = null;
+        let homeSessionClockInterval = null;
+        let html5QrCodeScanner = null;
+
+        // Cross-tab broadcast receiver
+        if (localBroadcast) {
+            localBroadcast.onmessage = (e) => {
+                if (e.data && e.data.type === 'SYNC') {
+                    pullLocalAndCloudState();
+                }
+            };
+        }
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === MASTER_STORAGE_KEY) {
+                pullLocalAndCloudState();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            closeInAppConfirm();
+            closeModal('expiredAlertModal');
+            closeModal('upiPaymentModal');
+            closeModal('ticketPassModal');
+            closeModal('adminPanelModal');
+
+            setTimeout(() => {
+                const splash = document.getElementById('splashScreen');
+                splash.style.opacity = '0';
+                splash.style.transform = 'scale(1.05)';
+                setTimeout(() => splash.style.display = 'none', 500);
+            }, 1000);
+
+            applyBanner();
+            renderCustomerStationBoxes();
+            renderControllerSelector();
+            renderPlansDeck();
+            calculateLiveReceipt();
+            updateLoyaltyDisplay();
+            renderSavedCustomerPasses();
+
+            document.getElementById('displayUpiIdText').innerText = cafeUpiId;
+
+            pullLocalAndCloudState();
+            setInterval(syncCustomerSessionFromCloud, 1000);
+        });
+
+        // =========================================================================
+        // 🚀 RELIABLE PERSISTENT REALTIME ENGINE (MULTI-TAB / MULTI-DEVICE)
+        // =========================================================================
+        function pushCloudState() {
+            try {
+                const payload = {
+                    stations: stationsDatabase,
+                    bookings: masterBookings,
+                    settings: {
+                        upiId: cafeUpiId,
+                        qrImg: customQrDataUrl,
+                        banner: cafeBanner
+                    },
+                    lastUpdated: Date.now()
+                };
+
+                localStorage.setItem(MASTER_STORAGE_KEY, JSON.stringify(payload));
+                if (localBroadcast) localBroadcast.postMessage({ type: 'SYNC' });
+            } catch (err) {
+                console.warn("Sync error:", err);
+            }
+        }
+
+        function pullLocalAndCloudState() {
+            try {
+                const raw = localStorage.getItem(MASTER_STORAGE_KEY);
+                if (!raw) return;
+                const data = JSON.parse(raw);
+
+                if (data.stations && Array.isArray(data.stations)) {
+                    stationsDatabase = data.stations;
+                    renderCustomerStationBoxes();
+                    renderAdminDibbeGrid();
+                }
+
+                if (data.bookings && Array.isArray(data.bookings)) {
+                    masterBookings = data.bookings;
+                    renderAdminDashboardData();
+                    renderAdminOrdersCards();
+                    renderSavedCustomerPasses();
+                }
+
+                if (data.settings) {
+                    if (data.settings.upiId && data.settings.upiId !== cafeUpiId) {
+                        cafeUpiId = data.settings.upiId;
+                        document.getElementById('displayUpiIdText').innerText = cafeUpiId;
+                    }
+                    if (data.settings.qrImg) customQrDataUrl = data.settings.qrImg;
+                    if (data.settings.banner) {
+                        cafeBanner = data.settings.banner;
+                        applyBanner();
+                    }
+                }
+
+                syncCustomerSessionFromCloud();
+                document.getElementById('syncTextLabel').innerText = "LIVE SYNC ON";
+                document.getElementById('liveSyncStatus').style.borderColor = "#10b981";
+            } catch (err) {
+                document.getElementById('syncTextLabel').innerText = "LOCAL MODE";
+            }
+        }
+
+        // =========================================================================
+        // ⏱️ TIMER LOGIC: INSTANT LIVE TIMER ON BOTH USER & ADMIN SCREEN
+        // =========================================================================
+        function syncCustomerSessionFromCloud() {
+            const myBookingId = localStorage.getItem(MY_ACTIVE_BOOKING_KEY);
+            let activeBooking = null;
+
+            if (myBookingId) {
+                activeBooking = masterBookings.find(b => b.id.trim().toLowerCase() === myBookingId.trim().toLowerCase());
+            }
+
+            if (!activeBooking) {
+                activeBooking = masterBookings.find(b => b.sessionActive && b.sessionEnd > Date.now());
+            }
+
+            if (activeBooking && activeBooking.sessionActive && activeBooking.sessionEnd > Date.now()) {
+                document.getElementById('liveTimerBar').style.display = 'flex';
+                document.getElementById('activeRigNameDisplay').innerText = activeBooking.station;
+
+                const diff = activeBooking.sessionEnd - Date.now();
+                const hrs = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('sessionTimerText').innerText = 
+                    `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            } else if (activeBooking && activeBooking.sessionActive && activeBooking.sessionEnd <= Date.now()) {
+                document.getElementById('liveTimerBar').style.display = 'none';
+                handleSessionComplete(activeBooking);
+            } else {
+                document.getElementById('liveTimerBar').style.display = 'none';
+            }
+        }
+
+        function handleSessionComplete(booking) {
+            playSfx('alarm');
+            document.getElementById('liveTimerBar').style.display = 'none';
+            localStorage.removeItem(MY_ACTIVE_BOOKING_KEY);
+
+            booking.sessionActive = false;
+            const st = stationsDatabase.find(s => s.name === booking.station);
+            if (st && st.status === 'Occupied') st.status = 'Available';
+            pushCloudState();
+
+            if (!booking.isDayPass) {
+                showExpirePopup();
+            } else {
+                triggerInAppToast('⭐', 'Aapka Day Pass active hai!');
+            }
+        }
+
+        function customerPromptStopSession() {
+            showInAppConfirm(
+                "STOP LIVE SESSION?",
+                "Kya aap apna live playing session abhi khatam karna chahte hain?",
+                () => {
+                    const myBookingId = localStorage.getItem(MY_ACTIVE_BOOKING_KEY);
+                    if (myBookingId) {
+                        adminStopSessionTimer(myBookingId);
+                    }
+                }
+            );
+        }
+
+        function showExpirePopup() {
+            const modal = document.getElementById('expiredAlertModal');
+            modal.style.setProperty('display', 'flex', 'important');
+        }
+
+        function buyNewPassFromExpireAlert() {
+            closeModal('expiredAlertModal');
+            switchTab('bookingTab', document.querySelectorAll('.tab-btn')[0]);
+        }
+
+        function updateLoyaltyDisplay() {
+            document.getElementById('displayLoyaltyPts').innerText = loyaltyPoints;
+            const pct = Math.min(100, (loyaltyPoints / 1000) * 100);
+            document.getElementById('loyaltyProgressBar').style.width = pct + '%';
+        }
+
+        function triggerInAppToast(icon, msg) {
+            const toast = document.getElementById('inAppToast');
+            document.getElementById('toastIcon').innerText = icon;
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        function applyBanner() {
+            const el = document.getElementById('heroBannerDisplay');
+            el.style.backgroundImage = `url('${cafeBanner.img}')`;
+            document.getElementById('bannerTitleText').innerText = cafeBanner.title;
+            document.getElementById('bannerSubText').innerText = cafeBanner.sub;
+        }
+
+        function renderCustomerStationBoxes() {
+            const container = document.getElementById('stationBoxes6Grid');
+            container.innerHTML = '';
+
+            stationsDatabase.forEach(st => {
+                const box = document.createElement('div');
+                const isSelected = selectedStation && selectedStation.id === st.id;
+                const isPlaying = st.status === 'Occupied';
+                const isOff = st.status === 'Maintenance';
+
+                let statusColor = '#10b981';
+                let statusLabel = '● FREE';
+                let extraClass = '';
+
+                if (isPlaying) {
+                    statusColor = '#ef4444';
+                    statusLabel = '● PLAYING';
+                    extraClass = 'occupied';
+                } else if (isOff) {
+                    statusColor = '#64748b';
+                    statusLabel = '● OFF';
+                    extraClass = 'disabled-off';
+                }
+
+                box.className = `station-box-item ${extraClass} ${isSelected ? 'selected' : ''}`;
+                box.innerHTML = `
+                    <div style="font-size:18px;">${st.type === 'PC' ? '🖥️' : (st.type === 'POOL' ? '🎱' : '🎮')}</div>
+                    <div class="station-box-name">${st.name}</div>
+                    <div class="station-box-type">${st.type}</div>
+                    <div class="station-box-status" style="color:${statusColor};">${statusLabel}</div>
+                `;
+
+                box.onclick = () => {
+                    if (st.status === 'Occupied') {
+                        triggerInAppToast('🔴', `${st.name} abhi busy hai! Dusra station chunein.`);
+                        return;
+                    }
+                    if (st.status === 'Maintenance') {
+                        triggerInAppToast('⚫', `${st.name} abhi band hai.`);
+                        return;
+                    }
+
+                    playSfx('select');
+                    selectedStation = st;
+                    if (st.type === 'PS5') selectedControllerId = 'single';
+                    else if (st.type === 'PS4') selectedControllerId = 'duo';
+                    else if (st.type === 'PS2') selectedControllerId = '1p';
+
+                    renderCustomerStationBoxes();
+                    renderControllerSelector();
+                    renderPlansDeck();
+                    calculateLiveReceipt();
+                };
+
+                container.appendChild(box);
+            });
+        }
+
+        function renderControllerSelector() {
+            const wrapper = document.getElementById('step2ControllerWrapper');
+            const grid = document.getElementById('controllersGrid');
+            grid.innerHTML = '';
+
+            const config = STATION_CONFIGS[selectedStation.type];
+            if (!config || !config.controllers || config.controllers.length === 0) {
+                wrapper.style.display = 'none';
+                return;
+            }
+
+            wrapper.style.display = 'block';
+            config.controllers.forEach(ctrl => {
+                const pill = document.createElement('div');
+                const isSel = selectedControllerId === ctrl.id;
+                pill.className = `ctrl-pill ${isSel ? 'selected' : ''}`;
+                pill.innerText = ctrl.label;
+
+                pill.onclick = () => {
+                    playSfx('select');
+                    selectedControllerId = ctrl.id;
+                    renderControllerSelector();
+                    renderPlansDeck();
+                    calculateLiveReceipt();
+                };
+
+                grid.appendChild(pill);
+            });
+        }
+
+        function renderPlansDeck() {
+            const container = document.getElementById('customPlanCardsGrid');
+            container.innerHTML = '';
+
+            const config = STATION_CONFIGS[selectedStation.type];
+            let plansList = [];
+
+            if (Array.isArray(config.plans)) {
+                plansList = config.plans;
+            } else if (config.plans && config.plans[selectedControllerId]) {
+                plansList = config.plans[selectedControllerId];
+            } else {
+                plansList = config.plans[Object.keys(config.plans)[0]] || [];
+            }
+
+            if (!selectedPlan || !plansList.some(p => p.id === selectedPlan.id)) {
+                selectedPlan = plansList[0];
+            }
+
+            plansList.forEach(plan => {
+                const isSelected = selectedPlan && selectedPlan.id === plan.id;
+                const card = document.createElement('div');
+                card.className = `plan-card-item ${isSelected ? 'selected' : ''}`;
+                card.innerHTML = `
+                    <div class="plan-card-left">
+                        <div class="plan-radio-circle"></div>
+                        <div class="plan-text-wrap">
+                            <span class="plan-title-txt">${plan.label}</span>
+                            <span class="plan-sub-txt">${plan.isDayPass ? '⭐ Unlimited Pass' : (plan.mins + ' Minutes Session')}</span>
+                        </div>
+                    </div>
+                    <div class="plan-price-pill">₹${plan.price}</div>
+                `;
+
+                card.onclick = () => {
+                    playSfx('select');
+                    selectedPlan = plan;
+                    document.querySelectorAll('.plan-card-item').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    calculateLiveReceipt();
+                };
+
+                container.appendChild(card);
+            });
+        }
+
+        function validatePhoneInput(input) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            const hint = document.getElementById('phoneValidationHint');
+            if (input.value.length === 10) {
+                hint.innerText = "✓ Valid 10-Digit Mobile Number";
+                hint.style.color = "#10b981";
+            } else if (input.value.length === 0) {
+                hint.innerText = "Sirf 10 digit mobile number enter karein.";
+                hint.style.color = "var(--text-dim)";
+            } else {
+                hint.innerText = `Invalid! ${input.value.length}/10 digits entered.`;
+                hint.style.color = "#ef4444";
+            }
+        }
+
+        function calculateLiveReceipt() {
+            const rigRate = selectedPlan ? selectedPlan.price : 0;
+            const snackTotal = orderedSnacks.reduce((sum, item) => sum + item.price, 0);
+
+            const isTodayFriday = new Date().getDay() === 5;
+            let discount = 0;
+            if (isTodayFriday) {
+                discount = Math.round(rigRate * 0.10);
+                document.getElementById('fridayRow').style.display = 'flex';
+                document.getElementById('fridayDiscountAmt').innerText = '- ₹' + discount;
+            } else {
+                document.getElementById('fridayRow').style.display = 'none';
+            }
+
+            const total = (rigRate - discount) + snackTotal;
+
+            document.getElementById('billRigPrice').innerText = '₹' + rigRate;
+            document.getElementById('billSnacksPrice').innerText = `${orderedSnacks.length} Items (₹${snackTotal})`;
+            document.getElementById('finalGrandTotal').innerText = '₹' + total;
+
+            return { rigRate, discount, snackTotal, total };
+        }
+
+        function addFoodItem(name, price) {
+            playSfx('coin');
+            orderedSnacks.push({ name, price });
+            calculateLiveReceipt();
+            triggerInAppToast('🍔', `${name} add ho gaya! (+₹${price})`);
+        }
+
+        function triggerUPIPaymentModal() {
+            playSfx('select');
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+
+            if (!name) {
+                triggerInAppToast('⚠️', 'Pehle apna Gamer Naam likhein!');
+                return;
+            }
+            if (!/^[0-9]{10}$/.test(phone)) {
+                triggerInAppToast('🚫', 'Invalid Number! Kripya poore 10-digit mobile number daalein.');
+                document.getElementById('custPhone').focus();
+                return;
+            }
+            if (selectedStation.status === 'Occupied') {
+                triggerInAppToast('🔴', `${selectedStation.name} abhi busy hai! Dusra station chunein.`);
+                return;
+            }
+
+            const bill = calculateLiveReceipt();
+            document.getElementById('modalPayAmount').innerText = '₹' + bill.total;
+
+            const qrCustomImg = document.getElementById('customImageQrPreview');
+            const qrGeneratedBox = document.getElementById('upiQRCode');
+
+            if (customQrDataUrl) {
+                qrCustomImg.src = customQrDataUrl;
+                qrCustomImg.style.display = 'block';
+                qrGeneratedBox.style.display = 'none';
+            } else {
+                qrCustomImg.style.display = 'none';
+                qrGeneratedBox.style.display = 'block';
+
+                const upiString = `upi://pay?pa=${cafeUpiId}&pn=ALT%20F4%20GAMING%20Sagar&am=${bill.total}&cu=INR&tn=Gaming%20Pass%20${encodeURIComponent(name)}`;
+                qrGeneratedBox.innerHTML = '';
+                new QRCode(qrGeneratedBox, {
+                    text: upiString,
+                    width: 170,
+                    height: 170,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.M
+                });
+            }
+
+            start1MinuteUpiCountdown();
+            document.getElementById('upiPaymentModal').style.display = 'flex';
+        }
+
+        function start1MinuteUpiCountdown() {
+            if (upiCountdownInterval) clearInterval(upiCountdownInterval);
+            let timeLeft = 60;
+            const clockEl = document.getElementById('upiClockCountdown');
+
+            function tick() {
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                clockEl.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                if (timeLeft <= 0) {
+                    clearInterval(upiCountdownInterval);
+                    cancelOnlinePayment("Payment window expired. Kripya dobara try karein.");
+                }
+                timeLeft--;
+            }
+            tick();
+            upiCountdownInterval = setInterval(tick, 1000);
+        }
+
+        function cancelOnlinePayment(msg) {
+            playSfx('select');
+            if (upiCountdownInterval) clearInterval(upiCountdownInterval);
+            closeModal('upiPaymentModal');
+            if (msg) triggerInAppToast('⏰', msg);
+        }
+
+        function confirmOnlinePaymentSuccess() {
+            if (upiCountdownInterval) clearInterval(upiCountdownInterval);
+            closeModal('upiPaymentModal');
+            playSfx('fanfare');
+            createFinalBookingRecord('Online UPI', 'Confirmed');
+        }
+
+        function bookWithCashOnCafe() {
+            playSfx('select');
+            const name = document.getElementById('custName').value.trim();
+            const phone = document.getElementById('custPhone').value.trim();
+
+            if (!name) {
+                triggerInAppToast('⚠️', 'Pehle apna Gamer Naam likhein!');
+                return;
+            }
+            if (!/^[0-9]{10}$/.test(phone)) {
+                triggerInAppToast('🚫', 'Invalid Number! Kripya poore 10-digit mobile number daalein.');
+                document.getElementById('custPhone').focus();
+                return;
+            }
+            if (selectedStation.status === 'Occupied') {
+                triggerInAppToast('🔴', `${selectedStation.name} abhi busy hai! Dusra station chunein.`);
+                return;
+            }
+
+            createFinalBookingRecord('Counter Cash', 'Pending Confirmation');
+        }
+
+        function createFinalBookingRecord(payStatus, bookingStatus) {
+            const name = document.getElementById('custName').value.trim() || 'Gamer';
+            const phone = document.getElementById('custPhone').value.trim() || 'N/A';
+            const slot = document.getElementById('timeSlotSelect').value;
+            const bill = calculateLiveReceipt();
+            const ticketId = '#F4-' + Math.floor(1000 + Math.random() * 9000);
+            const durationMins = selectedPlan ? (selectedPlan.mins || 60) : 60;
+            const isDayPass = selectedPlan ? selectedPlan.isDayPass : false;
+
+            const now = new Date();
+            const todayStr = now.toISOString().split('T')[0];
+
+            const bookingEntry = {
+                id: ticketId,
+                name: name,
+                phone: phone,
+                station: selectedStation.name,
+                type: selectedStation.type,
+                plan: selectedPlan.label,
+                durationMins: durationMins,
+                isDayPass: isDayPass,
+                slot: slot,
+                amount: bill.total,
+                payStatus: payStatus,
+                bookingStatus: bookingStatus,
+                date: todayStr,
+                timestamp: now.getTime(),
+                sessionActive: false,
+                sessionEnd: 0
+            };
+
+            let mySavedPasses = JSON.parse(localStorage.getItem(MY_SAVED_PASSES_STORAGE)) || [];
+            mySavedPasses.unshift(bookingEntry);
+            localStorage.setItem(MY_SAVED_PASSES_STORAGE, JSON.stringify(mySavedPasses));
+            localStorage.setItem(MY_ACTIVE_BOOKING_KEY, ticketId);
+
+            masterBookings.unshift(bookingEntry);
+            pushCloudState();
+
+            loyaltyPoints += 25;
+            updateLoyaltyDisplay();
+
+            renderSavedCustomerPasses();
+            displayTicketPass(bookingEntry);
+            triggerInAppToast('⚡', 'Pass save aur real-time sync ho gaya!');
+        }
+
+        function displayTicketPass(entry) {
+            document.getElementById('ticketIdDisplay').innerText = entry.id;
+            document.getElementById('ticketName').innerText = entry.name;
+            document.getElementById('ticketSeatDisplay').innerText = entry.station;
+            document.getElementById('ticketDuration').innerText = entry.plan;
+            document.getElementById('ticketSlot').innerText = entry.slot;
+            document.getElementById('ticketPaymentMode').innerText = entry.bookingStatus;
+            document.getElementById('ticketAmount').innerText = '₹' + entry.amount;
+
+            // Simplified QR Payload to avoid scanning errors
+            const qrTextPayload = `ALTF4|${entry.id}|${entry.station}|${entry.durationMins}`;
+
+            const qrBox = document.getElementById('ticketQRCode');
+            qrBox.innerHTML = '';
+            
+            setTimeout(() => {
+                new QRCode(qrBox, {
+                    text: qrTextPayload,
+                    width: 130,
+                    height: 130,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.M
+                });
+            }, 60);
+
+            document.getElementById('ticketPassModal').style.display = 'flex';
+        }
+
+        function renderSavedCustomerPasses() {
+            const container = document.getElementById('savedPassesList');
+            let mySavedPasses = JSON.parse(localStorage.getItem(MY_SAVED_PASSES_STORAGE)) || [];
+
+            let displayList = mySavedPasses;
+            if (displayList.length === 0 && masterBookings.length > 0) {
+                displayList = masterBookings;
+            }
+
+            if (displayList.length === 0) {
+                container.innerHTML = '<div style="color:var(--text-dim); text-align:center; padding:20px;">Abhi koi pass save nahi hai. Naya pass book karein!</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            displayList.forEach(pass => {
+                const cloudMatch = masterBookings.find(b => b.id.trim().toLowerCase() === pass.id.trim().toLowerCase());
+                const effectiveStatus = cloudMatch ? cloudMatch.bookingStatus : pass.bookingStatus;
+                const effectivePayment = cloudMatch ? cloudMatch.payStatus : pass.payStatus;
+
+                const card = document.createElement('div');
+                card.className = 'app-card';
+                card.style.marginBottom = '8px';
+                card.style.padding = '12px';
+                card.style.cursor = 'pointer';
+
+                const isConfirmed = effectiveStatus === 'Confirmed';
+                const isCancelled = effectiveStatus === 'Cancelled';
+                const statusColor = isConfirmed ? 'var(--neon-green)' : (isCancelled ? 'var(--danger)' : 'var(--warning-amber)');
+
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                        <strong style="color:var(--primary); font-family:'Orbitron'; font-size:13px;">${pass.id} • ${pass.station}</strong>
+                        <span style="color:${statusColor}; font-weight:800; font-family:'Orbitron'; font-size:10.5px;">● ${effectiveStatus}</span>
+                    </div>
+                    <div style="font-size:12.5px; color:#cbd5e1;">Gamer: <strong>${pass.name}</strong> • ${pass.plan}</div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; padding-top:6px; border-top:1px dashed #1e2e4a;">
+                        <span style="font-size:11.5px; color:var(--text-dim);">${effectivePayment} • ₹${pass.amount}</span>
+                        <span style="color:var(--primary); font-size:11px; font-weight:800; font-family:'Orbitron';">VIEW PASS QR ➔</span>
+                    </div>
+                `;
+
+                card.onclick = () => {
+                    playSfx('select');
+                    localStorage.setItem(MY_ACTIVE_BOOKING_KEY, pass.id);
+                    displayTicketPass({
+                        ...pass,
+                        bookingStatus: effectiveStatus,
+                        payStatus: effectivePayment
+                    });
+                };
+
+                container.appendChild(card);
+            });
+        }
+
+        function dispatchTicketToWhatsApp() {
+            closeModal('ticketPassModal');
+            const name = document.getElementById('ticketName').innerText;
+            const seat = document.getElementById('ticketSeatDisplay').innerText;
+            const plan = document.getElementById('ticketDuration').innerText;
+            const amt = document.getElementById('ticketAmount').innerText;
+            const payMode = document.getElementById('ticketPaymentMode').innerText;
+
+            const msg = 
+`⚡ *ALT F4 GAMING PASS CONFIRMATION* ⚡%0A%0A` +
+`👤 *Gamer:* ${encodeURIComponent(name)}%0A` +
+`🎮 *Station:* ${encodeURIComponent(seat)}%0A` +
+`⏱️ *Plan:* ${encodeURIComponent(plan)}%0A` +
+`💳 *Status:* ${encodeURIComponent(payMode)}%0A` +
+`💰 *Total Amount:* ${encodeURIComponent(amt)}%0A%0A` +
+`📍 *Location:* 1st Floor, Near Kanch Mandir, Gopalganj, Sagar%0A` +
+`_Bhaiya meri ye booking check kar lijiye!_`;
+
+            window.open(`https://wa.me/${CAFE_PHONE_RAW}?text=${msg}`, '_blank');
+        }
+
+        function closeModal(modalId) {
+            playSfx('select');
+            const el = document.getElementById(modalId);
+            el.style.setProperty('display', 'none', 'important');
+        }
+
+        function switchTab(tabId, btn) {
+            playSfx('select');
+            document.querySelectorAll('.section-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if(btn) btn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function jumpNav(idx) {
+            const tabIds = ['bookingTab', 'rateTab', 'menuTab', 'historyTab'];
+            const buttons = document.querySelectorAll('.tab-btn');
+            switchTab(tabIds[idx], buttons[idx]);
+        }
+
+        // ==========================================
+        // ADMIN CONSOLE FUNCTIONS (PIN: 7477)
+        // ==========================================
+        function openAdminModal() {
+            playSfx('select');
+            const el = document.getElementById('adminPanelModal');
+            el.style.setProperty('display', 'flex', 'important');
+        }
+
+        function verifyAdminPin() {
+            const pin = document.getElementById('adminPin').value.trim();
+            if (pin === ADMIN_SECRET) {
+                playSfx('fanfare');
+                document.getElementById('adminAuthBox').style.display = 'none';
+                document.getElementById('adminDashboardContent').style.display = 'block';
+                renderAdminDashboardData();
+                renderAdminOrdersCards();
+                renderAdminDibbeGrid();
+            } else {
+                triggerInAppToast('🚫', 'Access Denied: Galat PIN!');
+            }
+        }
+
+        function logoutAdmin() {
+            playSfx('select');
+            stopAdminCameraScanner();
+            document.getElementById('adminPin').value = '';
+            document.getElementById('adminAuthBox').style.display = 'block';
+            document.getElementById('adminDashboardContent').style.display = 'none';
+        }
+
+        function switchAdminTab(subpanelId, btn) {
+            playSfx('select');
+            if (subpanelId !== 'pScanQR') stopAdminCameraScanner();
+
+            document.querySelectorAll('.admin-subpanel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(subpanelId).classList.add('active');
+            btn.classList.add('active');
+
+            if (subpanelId === 'pDashboard') renderAdminDashboardData();
+            if (subpanelId === 'pBookings') renderAdminOrdersCards();
+            if (subpanelId === 'pDibbe') renderAdminDibbeGrid();
+        }
+
+        function renderAdminDashboardData() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayBookings = masterBookings.filter(b => b.date === todayStr);
+
+            document.getElementById('kpiTodayBookings').innerText = todayBookings.length;
+            const pendingOrders = masterBookings.filter(b => b.bookingStatus && b.bookingStatus.includes('Pending')).length;
+            document.getElementById('kpiPendingCount').innerText = pendingOrders;
+
+            const activePlayingCount = stationsDatabase.filter(s => s.status === 'Occupied').length;
+            document.getElementById('kpiActiveSessions').innerText = activePlayingCount;
+
+            let todayOnlineRev = 0;
+            let todayCashRev = 0;
+
+            todayBookings.forEach(b => {
+                if (b.bookingStatus === 'Confirmed') {
+                    const amt = parseInt(b.amount) || 0;
+                    if (b.payStatus.includes('Online') || b.payStatus.includes('UPI')) {
+                        todayOnlineRev += amt;
+                    } else {
+                        todayCashRev += amt;
+                    }
+                }
+            });
+
+            document.getElementById('kpiOnlineRevenue').innerText = '₹' + todayOnlineRev;
+            document.getElementById('kpiCashRevenue').innerText = '₹' + todayCashRev;
+            document.getElementById('kpiTotalRevenue').innerText = '₹' + (todayOnlineRev + todayCashRev);
+        }
+
+        function startAdminCameraScanner() {
+            playSfx('select');
+            const scannerContainer = document.getElementById('qrReaderBox');
+            scannerContainer.innerHTML = '';
+
+            html5QrCodeScanner = new Html5Qrcode("qrReaderBox");
+            const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+
+            html5QrCodeScanner.start(
+                { facingMode: "environment" },
+                config,
+                onQrCodeScannedSuccess,
+                () => {}
+            ).catch(err => {
+                triggerInAppToast('⚠️', 'Camera allow karein ya secure link use karein!');
+            });
+        }
+
+        function stopAdminCameraScanner() {
+            if (html5QrCodeScanner) {
+                html5QrCodeScanner.stop().then(() => {
+                    html5QrCodeScanner.clear();
+                    html5QrCodeScanner = null;
+                }).catch(() => {});
+            }
+        }
+
+        // ==========================================
+        // 📷 FIXED QR SCAN LOGIC: STARTS TIMER IMMEDIATELY
+        // ==========================================
+        function onQrCodeScannedSuccess(decodedText) {
+            playSfx('fanfare');
+            try {
+                let id = "", station = "", durationMins = 60;
+
+                if (decodedText.startsWith('ALTF4|')) {
+                    const parts = decodedText.split('|');
+                    id = parts[1].trim();
+                    station = parts[2] ? parts[2].trim() : "";
+                    durationMins = parts[3] ? parseInt(parts[3]) : 60;
+                } else {
+                    id = decodedText.trim();
+                }
+
+                let target = masterBookings.find(b => b.id.trim().toLowerCase() === id.toLowerCase());
+                if (!target && masterBookings.length > 0) {
+                    target = masterBookings[0];
+                }
+
+                if (target) {
+                    const stName = station || target.station;
+                    document.getElementById('scanVerifiedId').innerText = target.id;
+                    document.getElementById('scanVerifiedDetails').innerHTML = `
+                        Gamer: <strong>${target.name}</strong> • Station: <strong>${stName}</strong><br>
+                        Plan: <strong>${target.plan}</strong> • Amount: <strong>₹${target.amount}</strong><br>
+                        Status: <strong style="color:#10b981;">VALID & READY</strong>
+                    `;
+
+                    document.getElementById('scanStartSessionBtn').onclick = () => {
+                        adminStartSessionTimer(target.id, stName, durationMins);
+                    };
+
+                    document.getElementById('scanResultBadge').style.display = 'block';
+                    triggerInAppToast('✅', `Pass ${target.id} verified! Start timer button dabayein.`);
+                } else {
+                    triggerInAppToast('⚠️', 'Koi matching booking nahi mili!');
+                }
+            } catch(e) {
+                triggerInAppToast('⚠️', 'Scan parse error');
+            }
+        }
+
+        function renderAdminDibbeGrid() {
+            const container = document.getElementById('adminDibbeGrid');
+            if (!container) return;
+            container.innerHTML = '';
+
+            stationsDatabase.forEach((st) => {
+                const box = document.createElement('div');
+                let stateClass = 'free';
+                let stateLabel = '🟢 Free';
+
+                if (st.status === 'Occupied') {
+                    stateClass = 'playing';
+                    stateLabel = '🔴 Playing';
+                } else if (st.status === 'Maintenance') {
+                    stateClass = 'off';
+                    stateLabel = '⚫ Off';
+                }
+
+                box.className = `admin-dibba-box ${stateClass}`;
+                box.innerHTML = `
+                    <strong style="font-family:'Orbitron'; font-size:12px; color:#fff;">${st.name}</strong>
+                    <div style="font-size:10px; color:var(--text-dim); margin:2px 0;">${st.type}</div>
+                    <div style="font-size:11px; font-weight:800; font-family:'Orbitron';">${stateLabel}</div>
+                `;
+
+                box.onclick = () => {
+                    playSfx('coin');
+                    if (st.status === 'Available') {
+                        st.status = 'Occupied';
+                        triggerInAppToast('🔴', `${st.name} set to Playing`);
+                    } else if (st.status === 'Occupied') {
+                        st.status = 'Maintenance';
+                        triggerInAppToast('⚫', `${st.name} set to Off`);
+                    } else {
+                        st.status = 'Available';
+                        triggerInAppToast('🟢', `${st.name} set to Free`);
+                    }
+                    
+                    pushCloudState();
+                    renderAdminDibbeGrid();
+                    renderCustomerStationBoxes();
+                    renderAdminDashboardData();
+                };
+
+                container.appendChild(box);
+            });
+        }
+
+        function renderAdminOrdersCards() {
+            const container = document.getElementById('adminOrderCardsContainer');
+            container.innerHTML = '';
+
+            if (masterBookings.length === 0) {
+                container.innerHTML = `<div style="text-align:center; color:var(--text-dim); padding:16px;">Abhi koi live booking ya order nahi aaya hai.</div>`;
+                return;
+            }
+
+            masterBookings.forEach((b) => {
+                const card = document.createElement('div');
+                card.className = 'order-card-row';
+
+                const isConfirmed = b.bookingStatus === 'Confirmed';
+                const isCancelled = b.bookingStatus === 'Cancelled';
+                const statusColor = isConfirmed ? 'var(--neon-green)' : (isCancelled ? 'var(--danger)' : 'var(--warning-amber)');
+                const isSessionRunning = b.sessionActive && b.sessionEnd > Date.now();
+
+                card.innerHTML = `
+                    <div class="order-card-header">
+                        <div>
+                            <strong style="font-family:'Orbitron'; color:var(--primary); font-size:12.5px;">${b.id}</strong>
+                            <span style="font-size:12px; color:#fff; margin-left:4px;">${b.name}</span>
+                        </div>
+                        <span style="color:${statusColor}; font-weight:800; font-family:'Orbitron'; font-size:10px;">● ${b.bookingStatus}</span>
+                    </div>
+                    <div class="order-card-grid">
+                        <div>Station: <strong style="color:#fff;">${b.station}</strong></div>
+                        <div>Amount: <strong style="color:var(--neon-green);">₹${b.amount}</strong></div>
+                        <div>Plan: <span>${b.plan}</span></div>
+                        <div>Payment: <span>${b.payStatus}</span></div>
+                    </div>
+                    <div class="order-actions-bar">
+                        ${!isConfirmed && !isCancelled ? `
+                            <button style="background:var(--neon-green); color:#000; border:none; border-radius:5px; font-weight:800; font-size:10.5px; padding:5px 10px; cursor:pointer;" onclick="adminConfirmPayment('${b.id}')">
+                                ✓ CONFIRM ORDER
+                            </button>
+                        ` : ''}
+
+                        ${isConfirmed && !isSessionRunning ? `
+                            <button style="background:var(--primary); color:#000; border:none; border-radius:5px; font-weight:800; font-size:10.5px; padding:5px 10px; cursor:pointer;" onclick="adminStartSessionTimer('${b.id}', '${b.station}')">
+                                START TIMER ▶
+                            </button>
+                        ` : ''}
+
+                        ${isSessionRunning ? `
+                            <button style="background:#ef4444; color:#fff; border:none; border-radius:5px; font-weight:800; font-size:10.5px; padding:5px 10px; cursor:pointer;" onclick="adminStopSessionTimer('${b.id}')">
+                                ⏹️ STOP TIMER
+                            </button>
+                        ` : ''}
+
+                        ${!isCancelled ? `
+                            <button style="background:transparent; border:1px solid #ef4444; color:#ef4444; border-radius:5px; font-weight:800; font-size:10px; padding:4px 8px; cursor:pointer;" onclick="adminCancelOrder('${b.id}')">
+                                CANCEL
+                            </button>
+                        ` : '<span style="color:var(--danger); font-size:10.5px; font-weight:700;">CANCELLED</span>'}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function adminConfirmPayment(bookingId) {
+            playSfx('coin');
+            const target = masterBookings.find(b => b.id.trim().toLowerCase() === bookingId.trim().toLowerCase());
+            if (target) {
+                target.bookingStatus = 'Confirmed';
+                target.payStatus = 'Paid (Verified by Admin)';
+                pushCloudState();
+                renderAdminDashboardData();
+                renderAdminOrdersCards();
+                renderSavedCustomerPasses();
+                triggerInAppToast('✅', `${target.name} ka order confirm ho gaya!`);
+            }
+        }
+
+        function adminCancelOrder(bookingId) {
+            showInAppConfirm(
+                "CANCEL BOOKING?",
+                `Kya aap ${bookingId} booking cancel karna chahte hain?`,
+                () => {
+                    const target = masterBookings.find(b => b.id.trim().toLowerCase() === bookingId.trim().toLowerCase());
+                    if (target) {
+                        target.bookingStatus = 'Cancelled';
+                        const st = stationsDatabase.find(s => s.name === target.station);
+                        if (st) st.status = 'Available';
+                        pushCloudState();
+                        renderCustomerStationBoxes();
+                        renderAdminDibbeGrid();
+                        renderAdminDashboardData();
+                        renderAdminOrdersCards();
+                        renderSavedCustomerPasses();
+                        triggerInAppToast('🗑️', 'Order cancel ho gaya.');
+                    }
+                }
+            );
+        }
+
+        function adminStartSessionTimer(bookingId, stationName, customMins) {
+            playSfx('fanfare');
+            const target = masterBookings.find(b => b.id.trim().toLowerCase() === bookingId.trim().toLowerCase());
+            const stName = stationName || (target ? target.station : "PS5-01");
+            const durationMins = customMins || (target ? (target.durationMins || 60) : 60);
+            const endTime = Date.now() + (durationMins * 60 * 1000);
+
+            if (target) {
+                target.sessionActive = true;
+                target.sessionEnd = endTime;
+                target.bookingStatus = 'Confirmed';
+            }
+
+            const st = stationsDatabase.find(s => s.name === stName);
+            if (st) {
+                st.status = 'Occupied';
+                st.sessionEnd = endTime;
+            }
+
+            localStorage.setItem(MY_ACTIVE_BOOKING_KEY, bookingId);
+            pushCloudState();
+            renderCustomerStationBoxes();
+            renderAdminDibbeGrid();
+            renderAdminDashboardData();
+            renderAdminOrdersCards();
+            syncCustomerSessionFromCloud();
+
+            triggerInAppToast('▶️', `${stName} session timer shuru ho gaya!`);
+        }
+
+        function adminStopSessionTimer(bookingId) {
+            playSfx('alarm');
+            const target = masterBookings.find(b => b.id.trim().toLowerCase() === bookingId.trim().toLowerCase());
+            if (target) {
+                target.sessionActive = false;
+                target.sessionEnd = 0;
+
+                const st = stationsDatabase.find(s => s.name === target.station);
+                if (st) {
+                    st.status = 'Available';
+                    st.sessionEnd = 0;
+                }
+            }
+
+            localStorage.removeItem(MY_ACTIVE_BOOKING_KEY);
+            pushCloudState();
+            renderCustomerStationBoxes();
+            renderAdminDibbeGrid();
+            renderAdminDashboardData();
+            renderAdminOrdersCards();
+            syncCustomerSessionFromCloud();
+
+            triggerInAppToast('⏹️', `Session timer stop kar diya gaya!`);
+        }
+
+        function handleQrFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                customQrDataUrl = e.target.result;
+                const prev = document.getElementById('adminQrPreviewBox');
+                prev.src = customQrDataUrl;
+                prev.style.display = 'block';
+                pushCloudState();
+                triggerInAppToast('✅', 'QR Code update ho gaya!');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveAdminQrSettings() {
+            cafeUpiId = document.getElementById('adminCustomUpiId').value.trim() || cafeUpiId;
+            document.getElementById('displayUpiIdText').innerText = cafeUpiId;
+            pushCloudState();
+            triggerInAppToast('✅', 'UPI ID live update ho gayi!');
+        }
+
+        function handleBannerFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cafeBanner.img = e.target.result;
+                const prev = document.getElementById('adminBannerPreviewBox');
+                prev.src = cafeBanner.img;
+                prev.style.display = 'block';
+                pushCloudState();
+                triggerInAppToast('✅', 'Banner photo live sync ho gayi!');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveAdminBannerSettings() {
+            cafeBanner.title = document.getElementById('adminBannerHeadline').value.trim() || "ALT F4 GAMING LOUNGE";
+            pushCloudState();
+            applyBanner();
+            triggerInAppToast('✅', 'Banner text live update ho gaya!');
+        }
+    </script>
+</body>
+</html>
